@@ -1,0 +1,64 @@
+<html>
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/10.12.0/Dropbox-sdk.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+  <script src="/__build__/Dropbox-sdk.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="./css/pic-a-pix.css">
+  <title>
+    PIC a PIX
+  </title>
+</head>
+
+<body>
+    
+  <button class="infoButton" id ="btnRank" onclick="mostraInfo(false)">Melhores jogadores</button>
+  
+  <button class="infoButton" id ="btnInfo" onclick="mostraInfo(true)">Sobre o jogo</button>
+    
+  <div class="info" id ="gameInfo"> </div> 
+  
+  <h1 id="jogador"> </h1>
+  
+  <button class="levelButton" id ="btnReset" onclick="zeraJogo()" disabled="true">DIFICULDADE:</button>
+  <input type="range" list="niveis" id="valor" min="5" max="25" step="1" />
+  <datalist id="niveis">
+    <option value="5" label="5">
+    <option value="6">
+    <option value="7">
+    <option value="8">
+    <option value="9">
+    <option value="10">
+    <option value="11">
+    <option value="12">
+    <option value="13">
+    <option value="14">
+    <option value="15" label="15">
+    <option value="16">
+    <option value="17">
+    <option value="18">
+    <option value="19">
+    <option value="20">
+    <option value="21">
+    <option value="22">
+    <option value="23">
+    <option value="24">
+    <option value="25" label="25">
+  </datalist>
+  
+  <button class="okButton" id ="btnCria" onclick="criaJogo()">OK</button>
+  <br>
+  
+  <h3 id="teste"></h3>
+  
+  <h2 class="tempo" id="tempo"></h2><br> 
+  
+  <table id ="tabEnigma" border="0" cellspacing="0" cellpadding="0"></table> 
+  <h1 class="sucesso" id="sucesso"></h1> 
+  
+  <script type="text/javascript" src="./js/pic-a-pix.js"></script>
+</body>
+
+</html>
