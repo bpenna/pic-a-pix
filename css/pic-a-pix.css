@@ -1,0 +1,215 @@
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  color: white;
+  width='20px';
+}
+
+.titulo_tab{
+  color: black;  
+  background-color: gray;
+  font-size: 20pt;
+  font-family: "Roboto Mono", monospace;
+}
+
+body {
+  background-image: url(https://i.imgur.com/hH0Exib.jpg);
+  /*background-image: linear-gradient(darkorange, yellow);*/
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+h1, h2, input {
+  color: #272262;
+}
+
+.a_ON {
+  color: red;
+  font-size: 50%;
+  vertical-align: bottom;
+  content: "+";
+  background-color: transparent;
+  border: 0;
+  display: inline-block;
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.a_OFF {
+  color: red;
+  font-size: 50%;
+  vertical-align: bottom;
+  content: "+";
+  background-color: transparent;
+  border: 0;
+  display: inline-block;
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+  cursor: none;
+  pointer-events: none;
+}
+
+input[type=range] {
+  width: 50%;
+}
+
+.infoButton:enabled{
+  background-color: LightSkyBlue;
+  border-color: #272262;
+  color: #272262;
+  width: 150px;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 9pt;
+  margin-top: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all .4s ease-out;
+}
+
+.infoButton:hover{
+  background-color: #272262;
+  color: #fff;
+}
+
+.changePlayerBtn{
+  background-color: orangered;
+  color: white;
+  width: 30px;
+  height: 33px;
+  font-size: 10pt;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .4s ease-out;
+}
+
+.changePlayerInput{
+  background-color: orangered;
+  color: white;
+  width: 130px;
+  height: 28px;
+  font-size: 9pt;
+  border-radius: 7px;
+}
+
+.levelButton:enabled{
+  background-color: CornflowerBlue;
+  border-color: #272262;
+  color: #272262;
+  width: 130px;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 12pt;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all .4s ease-out;
+}
+
+.levelButton:disabled{
+  background-color: CornflowerBlue;
+  border-color: #272262;
+  color: #272262;
+  width: 130px;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 12pt;
+  border-radius: 8px;
+  outline: none;
+  transition: all .4s ease-out;
+}
+
+.levelButton:hover:enabled{
+  background-color: #272262;
+  color: #fff;
+}
+
+.okButton:enabled{
+  background-color: CornflowerBlue;
+  border-color: #272262;
+  color: #272262;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 12pt;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all .4s ease-out;
+}
+
+.okButton:disabled{
+  background-color: CornflowerBlue;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 12pt;
+  border-radius: 8px;
+  outline: none;
+  transition: all .4s ease-out;
+}
+
+.okButton:hover:enabled{
+  background-color: #272262;
+  color: #fff;
+}
+
+.marca {
+  border: solid white;
+  color: white;
+  background-color: white; 
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition-duration: 0.5s;
+  cursor: pointer;
+}
+
+.marca:hover {
+  background-color: black;
+}
+
+.tempo {
+  text-align: left;
+  color: #272262; 
+}
+
+.sucesso {
+  text-align: left;
+  color: red; 
+}
+
+.contador {
+  text-align: center;
+  color: white; 
+}
+
+.info {
+  color: black;
+  font-weight: bold;
+  font-size: 14pt;
+  width: 50%;
+  font-family: "Roboto Mono", monospace;
+  justify-content: center;
+  background-color: #ffffff80;
+  border-radius: 7px;
+  box-shadow: 3px 3px 1px 0px #00000060;
+  margin-top: 5px;
+}
+
+.buttonNome{
+  background-color: CornflowerBlue;
+  border-color: #272262;
+  color: #272262;
+  width: 30px;
+  padding: 7px;
+  font-weight: bold;
+  font-size: 8pt;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all .4s ease-out;
+}
