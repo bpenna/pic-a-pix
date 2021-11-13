@@ -8,18 +8,19 @@
   
   <link rel="stylesheet" type="text/css" href="./css/pic-a-pix.css">
   <title>
-    PIC a PIX
+    bpenna's PIC a PIX
   </title>
 </head>
 
 <body>
     
-  <button class="infoButton" id ="btnRank" onclick="mostraInfo(false)">Melhores jogadores</button>
+  <button class="infoButton" id ="btnRank" onclick="mostraRank(true)">Melhores jogadores</button>
   
   <button class="infoButton" id ="btnInfo" onclick="mostraInfo(true)">Sobre o jogo</button>
     
+  <div id ="gameRank"></div> 
   <div class="info" id ="gameInfo"> </div> 
-  
+  <div id ="fimInfo"></div>
   <h1 id="jogador"> </h1>
   
   <button class="levelButton" id ="btnReset" onclick="zeraJogo()" disabled="true">DIFICULDADE:</button>
