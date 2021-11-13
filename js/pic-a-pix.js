@@ -3,7 +3,10 @@ var versao_teste = false;
 var versao_teste_file = false;
 
 // Token para acessar meu Dropbox App (pic-a-pix)
-var ACCESS_TOKEN = "Idr40ognCAgAAAAAAAAAAeZQKKOTAf6wTgzIg8EihCCHqNrBIPGtzA4fB9eKk3yE";
+var ACCESS_TOKEN_RESULTS = "Idr40ognCAgAAAAAAAAAAeZQKKOTAf6wTgzIg8EihCCHqNrBIPGtzA4fB9eKk3yE";
+
+// Token para acessar meu Dropbox App (bpennaJS)
+var ACCESS_TOKEN_PLAYERS = "-JrFmjt8E6cAAAAAAAAAAauOzm7vOJuxNZIjR3abaOPMzOf5oHLI7xkHMc66gorH";
 
 // Informações para Dropbox
 var FILENAME = null;
@@ -20,7 +23,7 @@ var elementosRestantes = 0;
 var minJogo = 0;
 var segJogo = 0;
 var ptsJogo = 100;
-var tempoEspera = 3500;
+var tempoEspera = 4000;
 let tabela_completa = [];
 let tabela_inicial = [];
 let tabela_erros = [];
@@ -31,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     atualizaNome();
 }, false);
 
-function botoesJogo(ligado) {
+function botoesJogo(statusJogo) {
   
   // Se troca de nomes estiver em andamento, volta ao nome atual
   atualizaNome();
@@ -44,33 +47,76 @@ function botoesJogo(ligado) {
   document.getElementById("valor").disabled = true;
   document.getElementById("btnReset").disabled = true; 
   document.getElementById("btnReset").innerText = '........';  
-  
-  // Tempo necessário para atualizar arquivos no Dropbox (poucos segundos)
-  setTimeout(function(){ 
-    if (ligado) {
+   
+  if (statusJogo == "iniciou") {
     
-    // Tratando informações de jogador (desabilitando durante o jogo)
-    document.getElementById("alterar").setAttribute('class', 'a_OFF');
+    // Utiliza DropboxApp para armazenar informações de cada jogador
+    atualizaInfo("start");
+    
+    // Aplica botões corretos após atualizações
+    setTimeout(function(){
+      // Tratando informações de jogador (desabilitando durante o jogo)
+      document.getElementById("alterar").setAttribute('class', 'a_OFF');
       
-    // Tratando botões do jogo (desabilitando durante o jogo)
-    document.getElementById("btnCria").disabled = true;
-    document.getElementById("valor").disabled = true;
-    document.getElementById("btnReset").disabled = false;
-    document.getElementById("btnReset").innerText = 'VOLTA';  
-  } else {
-    
-    // Tratando informações de jogador (habilitando antes do jogo)
-    document.getElementById("alterar").setAttribute('class', 'a_ON');
-    
-    // Tratando botões do jogo (habilitando antes do jogo)
-    document.getElementById("btnCria").disabled = false;
-    document.getElementById("valor").disabled = false;
-    document.getElementById("btnReset").disabled = true;
-    document.getElementById("btnReset").innerText = 'DIFICULDADE:';
+      // Tratando botões do jogo (desabilitando durante o jogo)
+      document.getElementById("btnCria").disabled = true;
+      document.getElementById("valor").disabled = true;
+      document.getElementById("btnReset").disabled = false;
+      document.getElementById("btnReset").innerText = 'VOLTA'; 
+    }, tempoEspera);
+      
   }
+  
+  if (statusJogo == "completou") {
+    
+    // Utiliza DropboxApp para armazenar informações do jogo encerrado
+    atualizaInfo("happyEnd");
+    
+    // Utiliza DropboxApp para armazenar nomes dos jogadores
+    setTimeout(function(){ 
+      //atualizaInfo("players");
+      atualizaInfo("ranking");
+      
+      // Aplica botões corretos após atualizações
+      setTimeout(function(){ 
+    
+        // Tratando informações de jogador (habilitando antes do jogo)
+        document.getElementById("alterar").setAttribute('class', 'a_ON');
+    
+        // Tratando botões do jogo (habilitando antes do jogo)
+        document.getElementById("btnCria").disabled = false;
+        document.getElementById("valor").disabled = false;
+        document.getElementById("btnReset").disabled = true;
+        document.getElementById("btnReset").innerText = 'DIFICULDADE:';
+        
+        // Reinicia os pontos do jogador quando vencer o jogo
+        ptsJogo = 100;
+      }, tempoEspera);
+    }, tempoEspera);
+  
+  }
+  
+  if (statusJogo == "saiu") {
+    
+    // Utiliza DropboxApp para armazenar informações do jogo encerrado
+    atualizaInfo("sadEnd");
+    
+    // Aplica botões corretos após atualizações
+    setTimeout(function(){
+      // Tratando informações de jogador (habilitando antes do jogo)
+      document.getElementById("alterar").setAttribute('class', 'a_ON');
+    
+      // Tratando botões do jogo (habilitando antes do jogo)
+      document.getElementById("btnCria").disabled = false;
+      document.getElementById("valor").disabled = false;
+      document.getElementById("btnReset").disabled = true;
+      document.getElementById("btnReset").innerText = 'DIFICULDADE:';
+      
+      // Reinicia os pontos do jogador quando vencer o jogo
+      ptsJogo = 100;
+    }, tempoEspera);
 
-  }, tempoEspera);
- 
+  }
 }
 
 // Criação do enigma
@@ -80,12 +126,9 @@ function criaJogo() {
   dimensao = parseInt(document.getElementById("valor").value);
   var num_1 = parseInt(Math.ceil(dimensao/2));
   var num_0 = parseInt(Math.floor(dimensao/2));
-  
-  // Utiliza DropboxApp para armazenar informações de cada jogador
-  atualizaInfo(false, true, atualDataHora() + " " + " IP: " + USER_IP + " SIZE: " + pad(dimensao));
-  
-  // Desabilita botão de criação
-  botoesJogo(true);
+   
+  // Desabilita botão de criação e salva informações
+  botoesJogo("iniciou");
         
   // Cria o enigma inicial
   inicializaEnigma(num_1, num_0);
@@ -95,16 +138,80 @@ function criaJogo() {
   
   // Preenche HTML com a tabela inicial
   imprimeEnigma(true);
-    
+  
 }
 
-function atualizaInfo(indexFile, novaLinha, atual) {
+function atualizaInfo(tipo) {
+  
+  // Configurações iniciais
+  var indexFile = false;
+  var rankFile = false;
+  var novaLinha = false;
+  var atual = "";
+  var ACCESS_TOKEN = "";
+  
+  if (tipo == "players") {
+    indexFile = true;
+    novaLinha = true;
+    atual = "NOME: " + USER_NAME + " ACESSO: " + atualDataHora() + " (" + USER_IP + ")";
+    ACCESS_TOKEN = ACCESS_TOKEN_PLAYERS;
+    
+    if (versao_teste_file) {
+      console.log(">> ACCESS TOKEN PLAYERS");
+    }
+  }
+  
+    if (tipo == "ranking") {
+      rankFile = true;
+      novaLinha = true;
+      atual = "<" + corrigeTempo() + "> <" + pad(minJogo) + ":" + pad(segJogo) + "> <" + pad3(ptsJogo) + "> <" + atualData() + "> " + USER_NAME;
+      ACCESS_TOKEN = ACCESS_TOKEN_PLAYERS;
+    
+    if (versao_teste_file) {
+      console.log(">> ACCESS TOKEN PLAYERS (RANKING)");
+    }
+  }
+  
+  if (tipo == "start") {
+    novaLinha = true;
+    atual = atualDataHora() + " @ " + USER_IP + " = [SIZE: " + pad(dimensao) + "]";
+    ACCESS_TOKEN = ACCESS_TOKEN_RESULTS;
+    
+    if (versao_teste_file) {
+      console.log(">> ACCESS TOKEN RESULTS");
+    }
+  }
+       
+  if (tipo == "happyEnd") {
+    atual = " [TIME: " + pad(minJogo) + ":" + pad(segJogo) + "] [PTS: " + pad3(ptsJogo) + "] STATUS = OK!";
+    ACCESS_TOKEN = ACCESS_TOKEN_RESULTS;
+     
+    if (versao_teste_file) {
+      console.log(">> ACCESS TOKEN RESULTS");
+    }
+  }
+          
+  if (tipo == "sadEnd") {
+    atual = " [TIME: " + pad(minJogo) + ":" + pad(segJogo) + "] [PTS: " + pad3(ptsJogo) + "] STATUS = END";
+    ACCESS_TOKEN = ACCESS_TOKEN_RESULTS;
+     
+    if (versao_teste_file) {
+      console.log(">> ACCESS TOKEN RESULTS");
+    }
+  }
     
   // Se não houver nome do jogador, não cria nem altera arquivo com nomes
-  if (indexFile) {
+  if (indexFile | rankFile) {
     if (USER_NAME == null) {
+      if (versao_teste_file) {
+        console.log(">> SEM NOME!!!");
+      }
       return;
     }
+  }
+  
+  if (versao_teste_file) {
+    console.log(">> " + atual);
   }
   
   // INÍCIO TEMPORIZADOR
@@ -115,15 +222,20 @@ function atualizaInfo(indexFile, novaLinha, atual) {
     
   // Define o nome do arquivo a ser salvo
   // #nomes.txt = nomes de todos os jogadores
+  // n.txt = tempo corrigido dos jogadores para cada nível de dificuldade (n)
   // 0.txt = resultados dos jogos de jogadores sem nome (não entram no ranking)
   // x.txt = resultados dos jogos de jogadores com nome (entram no ranking)
   if (indexFile) {
     FILENAME = "#nomes.txt";
   } else {
-    if (USER_NAME != null) {
-      FILENAME = USER_NAME + ".txt";  
+    if (rankFile) {
+      FILENAME = dimensao + ".txt";
     } else {
-      FILENAME = "0.txt";  
+      if (USER_NAME != null) {
+        FILENAME = USER_NAME + ".txt";  
+      } else {
+        FILENAME = "0.txt";  
+      }
     }
   }
   
@@ -288,6 +400,8 @@ function atualizaInfo(indexFile, novaLinha, atual) {
             }
           }
   
+          console.log(">>>>>>>>>" + NEW_FILE_INFO);
+          
           // Cria novo arquivo (seja geral ou sobre cada jogador)
           var file = new File([NEW_FILE_INFO], FILENAME);
               
@@ -355,12 +469,14 @@ function atualizaInfo(indexFile, novaLinha, atual) {
           
       let FILE_NOVO = [];
       // Só cria novo arquivo se jogo não tiver começado ainda
-      if (novaLinha) {
+      if (novaLinha == true) {
         if (indexFile) {
           FILE_NOVO = ["JOGADORES (bpenna.github.io/pic-a-pix) criado em " + atualDataHora()];
         }
         else {
-          FILE_NOVO = ["RESULTADOS (bpenna.github.io/pic-a-pix) criado em " + atualDataHora()];
+          if (rankFile == false) {
+            FILE_NOVO = ["RESULTADOS (bpenna.github.io/pic-a-pix) criado em " + atualDataHora()];
+          }
         }
           
         FILE_NOVO.push(atual.toString());
@@ -547,6 +663,15 @@ function atualDataHora() {
   return pad(dia) + "-" + pad(mes) + "-" + ano + " (" + pad(hora) + "h" + pad(min) + "min)";
 }
 
+function atualData() {
+  var data = new Date();
+  var dia = data.getDate();
+  var mes = data.getMonth() + 1; // 0 é janeiro
+  var ano = data.getFullYear();
+  
+  return pad(dia) + "-" + pad(mes) + "-" + ano;
+}
+
 // Apresenta número com dois dígitos
 function pad(s) {
   return (s < 10) ? '0' + s : s;
@@ -580,11 +705,6 @@ function imprimeEnigma(inicio){
   // Faz tempo aparecer junto com o jogo ao iniciá-lo
   if (inicio) {
     document.getElementById('tempo').innerHTML = "<u>TEMPO</u>: 00:00" + "<BR><BR>" + "<u>PONTOS</u>: 100";
-    
-    // Utiliza DropboxApp para armazenar nomes dos jogadores
-    setTimeout(function(){ 
-      atualizaInfo(true, true, "NOME: " + USER_NAME + " ACESSO: " + atualDataHora() + " (" + USER_IP + ")");  
-    }, tempoEspera);
   }
   // Verifica se jogo já está completo
   elementosRestantes = confere(tabela_completa,tabela_inicial);
@@ -665,20 +785,14 @@ function imprimeEnigma(inicio){
     
     // Exibindo mensagem
     document.getElementById("sucesso").innerHTML = "PARABÉNS!!!";
-    
-    // Habilitando botões
-    botoesJogo(false);  
-      
+         
     // DEBUG
     if (versao_teste) {
       console.log("COMPLETOU (" + dimensao + ")");
     }
     
-    // Atualiza arquivo com informação sobre o fim do jogo
-    atualizaInfo(false, false, " TIME: " + pad(minJogo) + ":" + pad(segJogo) + " PTS: " + pad3(ptsJogo) + " STATUS: OK!");
-            
-    // Reinicia os pontos do jogador quando vencer o jogo
-    ptsJogo = 100;
+    // Habilita botão de criação e salva informações
+    botoesJogo("completou");
     
   } else {
     // Remove parabéns para não ficar sobrando
@@ -687,8 +801,6 @@ function imprimeEnigma(inicio){
 } 
 
 function zeraJogo() {
-  // Volta com os botões iniciais
-  botoesJogo(false);
   
   // Apaga tabela e tempo
   elementosRestantes = 0;
@@ -700,9 +812,9 @@ function zeraJogo() {
     console.log("ZEROU (" + dimensao + ")");
   }
   
-  // Atualiza arquivo com informação sobre o fim do jogo
-  atualizaInfo(false, false, " TIME: " + pad(minJogo) + ":" + pad(segJogo) + " PTS: " + pad3(ptsJogo) + " STATUS: OUT");
-  
+  // Habilita botão de criação e salva informações
+  botoesJogo("saiu");
+    
   // Reinicia os pontos do jogador quando reiniciar o jogo
   ptsJogo = 100;
 }
@@ -810,6 +922,7 @@ function calcula(matriz) {
   return cont;
 }
 
+// Função para obter o IP do jogador
 function getIp(callback)
 {
     function response(s)
@@ -844,6 +957,7 @@ function getIp(callback)
     }
 }
 
+// Função para obter o IP do jogador
 getIp(function (ip) {
   USER_IP = ip;
   if (versao_teste) {
@@ -851,6 +965,7 @@ getIp(function (ip) {
   }
 });
 
+// Mostrando o tempo decorrido de jogo
 function mostraTempo(atual) {
   // Atualiza o tempo a cada segundo
   const myInterval = setInterval(function() {
@@ -872,6 +987,23 @@ function mostraTempo(atual) {
   }, 1000);
 }
 
+// Retorna valor de tempo final corrigo pelos pontos
+function corrigeTempo() {
+  /*console.log("pts: " + ptsJogo);
+  console.log("10 * (100 - ptsJogo): " + (10 * (100 - ptsJogo)));
+  console.log("minJogo: " + minJogo);
+  console.log("segJogo: " + segJogo);
+  console.log("segJogo + 60 * minJogo: " + (segJogo + 60 * minJogo));
+  console.log("10 * (100 - ptsJogo) + segJogo + 60 * minJogo: " + (10 * (100 - ptsJogo) + segJogo + 60 * minJogo));
+  */
+  var total = 10 * (100 - ptsJogo) + segJogo + 60 * minJogo;
+  var minJogoNovo = Math.floor(total / 60);
+  var segJogoNovo = total - minJogoNovo * 60;
+  
+  return pad(minJogoNovo) + ":" + pad(segJogoNovo);
+}
+
+// Mostrando as regras do jogo
 function mostraInfo(ligado) {
   
   var infoText = "";
@@ -890,24 +1022,216 @@ function mostraInfo(ligado) {
     
     infoText += "<img src='https://i.imgur.com/WSMBf83.jpg' style='width:100% ; height:100%'/><br>";
     
-     infoText += "<br><u>DESENVOLVIDO POR</u>: Bernardo Penna (2021)<br><br>";
+    infoText += "<br><u>DESENVOLVIDO POR</u>: Bernardo Penna (2021)<br><br>";
     
     infoText += "<u>CONTATO</u>: bpenna@gmail.com<br>";
     
+    // Troca a função do botão
+    document.getElementById("btnInfo").onclick = function() {mostraInfo(false)};
+    
+    // Linha de separação
+    document.getElementById('fimInfo').innerHTML = "<br><hr>";
+        
   } else {
+    // Remove o espaço usado para as regras
     document.getElementById("gameInfo").style.padding = "0px";
+    
+    // Troca a função do botão
+    document.getElementById("btnInfo").onclick = function() {mostraInfo(true)};
+    
+    // Linha de separação
+    document.getElementById('fimInfo').innerHTML = "";
   }
   
+  // Campo para informar as regras
   document.getElementById('gameInfo').innerHTML = infoText;
 }
 
-function mostraRank() {
+// Mostrando o ranking do jogo
+function mostraRank(ligado) {
   
-  console.log("Ranking");
+  var infoText = "";
+  if (ligado) {
+    // Troca a função do botão
+    document.getElementById("btnRank").onclick = function() {mostraRank(false)};
+    
+    infoText += "<h3>&nbspQual a dificuldade?</h3>";
+    for (var i = 0; i < 7; i++) {
+      for (var j = 0; j < 3; j++) {
+        infoText += "<button class='ranking' onclick='criaRank("+ (5 + 3*i+j) +")'>" + (5 + 3*i+j) + "</button> &nbsp &nbsp";
+      }
+      infoText +="<br>";
+    }
+    infoText +="<br><hr>";
+    
+  } else {
+    // Troca a função do botão
+    document.getElementById("btnRank").onclick = function() {mostraRank(true)};
+  }
+  
+  // Campo para informar o ranking
+  document.getElementById('gameRank').innerHTML = infoText;
+}
+
+// Obtém informações do arquivo para gerar o ranking solicitado
+function criaRank(dificuldade) {
+  
+  // Procura arquivo com informações para ranking da dificuldade indicada
+  var RANKFILENAME = dificuldade + ".txt";
+  
+  // DEBUG
+  if (versao_teste_file) {
+    console.log("RANKFILENAME: " + RANKFILENAME); 
+  }
+  
+  // Utiliza DropboxApp para obter informações do ranking
+  var dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN_PLAYERS });
+  
+  // Procura atual arquivo e pega seu id, caso exista
+  var RANK_FILE_ID = "";
+  let RANK_FILE_INFO = [];
+  let SORTED_RANK_FILE_INFO = [];
+  
+  // PROCURA arquivo
+  dbx.filesListFolder({path: ''})
+  .then(function(response) {
+    for (var i = 0; i < response.result.entries.length; i++) {
+      if (response.result.entries[i].name == RANKFILENAME){
+        RANK_FILE_ID = response.result.entries[i].id;
+      }
+    }  
+   
+    // DEBUG
+    if (versao_teste_file) {
+      console.log("RANK_FILE_ID: " + RANK_FILE_ID); 
+      console.log("LENGTH: " + RANK_FILE_ID.length); 
+    }
+    
+    // Quando o arquivo procurado não existe
+    if (RANK_FILE_ID.length == 0) {
+      
+      // Informar que não achou arquivo
+      console.log("Ranking vazio (nivel " + dificuldade + ")")
+      
+      // Campo para informar que não tem ranking disponível
+      document.getElementById('gameRank').innerHTML = "<h3>Ranking para o nível " + dificuldade + " ainda não disponível.</h3>";
+      
+    } else {
+      // DEBUG
+      if (versao_teste_file) {
+        console.log("1 de 2) Achou RANKFILENAME ("+ RANK_FILE_ID +")"); 
+      }
+      
+      // CARREGA conteúdo do arquivo
+      dbx.filesDownload({path: RANK_FILE_ID})
+      .then(function(response) {
+        const reader = new FileReader();
+        const fileContentAsText = reader.readAsText(response.result.fileBlob);
+        reader.onload = (e) => {
+          var texto = "";     
+          for (var i = 0; i < reader.result.length; i++) {
+            //console.log(reader.result[i]);
+            if (reader.result[i] == '\n'){
+              //console.log(i + " = " + texto);
+              RANK_FILE_INFO.push(texto.toString());
+              texto = "";
+            } else {
+              texto += reader.result[i];
+              //console.log(i + " = " + texto);
+            }
+          }
+          RANK_FILE_INFO.push(texto.toString());
+          
+          // Ordena ranking para apresentar na tabela
+          SORTED_RANK_FILE_INFO = ordenaInfo(RANK_FILE_INFO);
+          
+          /*console.log(response.result);
+          console.log(response.result.fileBlob);
+          console.log(reader.result);
+          console.log(RANK_FILE_INFO);
+          console.log(SORTED_RANK_FILE_INFO);*/
+          
+          // DEBUG
+          if (versao_teste_file) {
+            console.log("2 de 2) Carregou RANKFILENAME (" + RANKFILENAME + ")");
+          }
+        
+          // Imprime informações do ranking na tabela
+          var infoText = "";
+          infoText += "<h3>Dificuldade " + dificuldade + ":</h3>";
+          infoText += "<table>";
+  
+          console.log(SORTED_RANK_FILE_INFO);
+
+          infoText += "<tr><th>Nº</th><th>Nome</th><th>Tempo ajustado</th><th>Data</th><th>Tempo</th><th>Pontos</th></tr>";
+          for (var i = 0; i < RANK_FILE_INFO.length; i++) {
+            infoText += "<tr><td>" + (i+1) +"º</td><td>" + SORTED_RANK_FILE_INFO[i].substr(35) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(1,5) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(23,10) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(9,5) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(17,3) + "</td></tr>";
+          }
+          infoText += "</table><br><hr>";
+    
+          // Campo para informar o ranking
+          document.getElementById('gameRank').innerHTML = infoText;
+        }        
+      })
+      .catch(function(error) {
+        console.error("dbx.fileDownload(RANK)");
+        console.error(error);
+      });
+    }
+  })
+  .catch(function(error) {
+    console.error("dbx.filesListFolder(RANK)");
+    console.error(error);  
+  });
+}
+
+function ordenaInfo(lista) {
+  
+  // Cria vetor com tempos corrigidos para realizar a ordenação
+  let vetor = []; 
+  for (var i = 0; i < lista.length; i++) {
+    vetor[i] = Math.floor(lista[i].substr(1,2) * 60 + lista[i].substr(4,2));
+  }
+  if (versao_teste) {
+    console.log("Vetor original:");
+    console.log(vetor);
+    console.log("Lista original:");
+    console.log(lista);
+  }
+  
+  // Executa a ordenação com base no vetor de tempos corrigidos
+  for (var i = 0; i < lista.length - 1; i++) {
+    for (var j = 0; j < lista.length - i - 1; j++) {
+      if (vetor[j] > vetor[j + 1]) {
+        // Ordena valor
+        let tempVetor = vetor[j];
+        vetor[j] = vetor[j + 1];
+        vetor[j + 1] = tempVetor;
+        // Ordena lista completa 
+        let tempLista = lista[j];
+        lista[j] = lista[j + 1];
+        lista[j + 1] = tempLista;
+        //let tempLista1 = lista[j];
+        //let tempLista2 = lista[j + 1];
+        //lista = lista.splice(j  ,1, tempLista1);
+        //lista = lista.splice(j+1,1, tempLista2);
+      }
+    }
+  }
+  
+  if (versao_teste) {
+    console.log("Vetor ordenado:");
+    console.log(vetor);
+    console.log("Lista ordenada:");
+    console.log(lista);
+  }
+  
+  console.log(lista);
+  
+  return lista;
 }
 
 function trocaJogador() {
-  
   document.getElementById("jogador").innerHTML = "<br><input class='changePlayerInput' id='novoNome'></input> <button class='changePlayerBtn' onclick='gravaNome()'>ok</button> , resolva o <u>PIC a PIX</u> abaixo:";
     
 } 
