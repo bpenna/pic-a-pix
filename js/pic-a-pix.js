@@ -17,13 +17,16 @@ var USER_NAME = null;
 var proporcao_linhas = 0.8; //proporcao de linhas apresentadas (0 a 1)
 var proporcao_colunas = 0.5; //proporcao de colunas apresentadas (0 a 1)
 
+// Quantidade de nomes nos rankings
+var numRanking = 50;
+
 // Informações sobre o enigma
 var dimensao = 0;
 var elementosRestantes = 0;
 var minJogo = 0;
 var segJogo = 0;
 var ptsJogo = 100;
-var tempoEspera = 4000;
+var tempoEspera = 5000;
 let tabela_completa = [];
 let tabela_inicial = [];
 let tabela_erros = [];
@@ -279,16 +282,13 @@ function atualizaInfo(tipo) {
         const reader = new FileReader();
         const fileContentAsText = reader.readAsText(response.result.fileBlob);
         reader.onload = (e) => {
-          var texto = "";     
+          var texto = "";    
           for (var i = 0; i < reader.result.length; i++) {
-            //console.log(reader.result[i]);
             if (reader.result[i] == '\n'){
-              //console.log(i + " = " + texto);
               FILE_INFO.push(texto.toString());
               texto = "";
             } else {
               texto += reader.result[i];
-              //console.log(i + " = " + texto);
             }
           }
           FILE_INFO.push(texto.toString());
@@ -360,17 +360,28 @@ function atualizaInfo(tipo) {
                 } else {
                   // Mantém informações dos outros jogadores
                   for (var j = 0; j < FILE_INFO[i].length; j++) {            
-                    NEW_FILE_INFO += FILE_INFO[i][j];
+                    /*if (FILE_INFO[i][j] == '\r') {
+                      console.log("achou R");
+                    }
+                    if (FILE_INFO[i][j] == '\n') {
+                      console.log("achou N");
+                    }*/
+                    if (FILE_INFO[i][j] != '\r') {
+                      NEW_FILE_INFO += FILE_INFO[i][j];
+                    }
                   }
+                  //console.log("-----------------------");
                 }
               }
               if (i < FILE_INFO.length - 1) {
-                NEW_FILE_INFO += '\r\n';
+                //NEW_FILE_INFO += '\r\n';
+                NEW_FILE_INFO += '\n';
               }
             }
             // Se for novo jogador, inclui as informações na última linha
             if (novoJogador) {
-              NEW_FILE_INFO += '\r\n';
+              //NEW_FILE_INFO += '\r\n';
+              NEW_FILE_INFO += '\n';
               for (var j = 0; j < atual.length; j++) {            
                 NEW_FILE_INFO += atual[j];
               }
@@ -382,15 +393,25 @@ function atualizaInfo(tipo) {
               // Informações sobre INÍCIO do jogo em nova linha
               FILE_INFO.push(atual.toString());
             }
-             
+                        
             // Ajusta informações para serem escritas no novo arquivo
             for (var i = 0; i < FILE_INFO.length; i++) {
               
               for (var j = 0; j < FILE_INFO[i].length; j++) {            
-                NEW_FILE_INFO += FILE_INFO[i][j];
+                /*if (FILE_INFO[i][j] == '\r') {
+                  console.log("achou R");
+                }
+                if (FILE_INFO[i][j] == '\n') {
+                  console.log("achou N");
+                }*/
+                if (FILE_INFO[i][j] != '\r') {
+                  NEW_FILE_INFO += FILE_INFO[i][j];
+                }
               }
+              //console.log("-----------------------");
               if (i < FILE_INFO.length - 1) {
-                NEW_FILE_INFO += '\r\n';
+                //NEW_FILE_INFO += '\r\n';
+                NEW_FILE_INFO += '\n';
               }
             }
               
@@ -400,7 +421,9 @@ function atualizaInfo(tipo) {
             }
           }
   
-          console.log(">>>>>>>>>" + NEW_FILE_INFO);
+          if (versao_teste_file) {
+            console.log(">>>>>>>>>" + NEW_FILE_INFO);
+          }        
           
           // Cria novo arquivo (seja geral ou sobre cada jogador)
           var file = new File([NEW_FILE_INFO], FILENAME);
@@ -488,7 +511,8 @@ function atualizaInfo(tipo) {
             NEW_FILE_NOVO += FILE_NOVO[i][j];
           }
           if (i < FILE_NOVO.length - 1) {
-            NEW_FILE_NOVO += '\r\n';    
+            //NEW_FILE_NOVO += '\r\n';    
+            NEW_FILE_NOVO += '\n';    
           }  
         }
                 
@@ -689,9 +713,11 @@ function marcaAqui(linha, coluna) {
     // Marca acerto na tabela inicial
     tabela_inicial[linha][coluna] = 1;
   } else {
-    // Jogador perde pontos quando erra
-    ptsJogo--;
-    
+    // Jogador perde pontos quando erra (mínimo de 0)
+    if (ptsJogo > 0) {
+      ptsJogo--;
+    }
+        
     // Marca erro na tabela de erros
     tabela_erros[linha][coluna] = 1;   
   }
@@ -1161,10 +1187,19 @@ function criaRank(dificuldade) {
           infoText += "<h3>Dificuldade " + dificuldade + ":</h3>";
           infoText += "<table>";
   
-          console.log(SORTED_RANK_FILE_INFO);
-
+          // DEBUG
+          if (versao_teste) {
+            console.log(SORTED_RANK_FILE_INFO);
+          }
+          
           infoText += "<tr><th>Nº</th><th>Nome</th><th>Tempo ajustado</th><th>Data</th><th>Tempo</th><th>Pontos</th></tr>";
-          for (var i = 0; i < RANK_FILE_INFO.length; i++) {
+          
+          var maxRanking = numRanking;
+          if (RANK_FILE_INFO.length < numRanking){
+            maxRanking = RANK_FILE_INFO.length;
+          }
+          
+          for (var i = 0; i < maxRanking; i++) {
             infoText += "<tr><td>" + (i+1) +"º</td><td>" + SORTED_RANK_FILE_INFO[i].substr(35) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(1,5) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(23,10) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(9,5) + "</td><td>" + SORTED_RANK_FILE_INFO[i].substr(17,3) + "</td></tr>";
           }
           infoText += "</table><br><hr>";
@@ -1224,10 +1259,7 @@ function ordenaInfo(lista) {
     console.log(vetor);
     console.log("Lista ordenada:");
     console.log(lista);
-  }
-  
-  console.log(lista);
-  
+  }  
   return lista;
 }
 
