@@ -1,3 +1,75 @@
+.slider{
+  width: 100vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.slider .container-slider{
+  width: 500px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.slider .container-slider input[type="range"]{
+  width: 60%;
+  -webkit-appearance: none;
+  background-color: blue;
+  height: 7px;
+  border-radius: 5px;;
+  outline: none;
+  margin: 0px 10px; 
+}
+
+.slider .container-slider input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  width: 25px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #272262;
+}
+
+.slider .container-slider input[type="range"]::-webkit-slider-thumb:hover{
+
+  cursor: pointer;
+  box-shadow: 0px 0px 10px rgba(255,255,255,.3),
+              0px 0px 15px rgba(255,255,255,.4),
+              0px 0px 20px rgba(255,255,255,.5),
+              0px 0px 25px rgba(255,255,255,.6),
+              0px 0px 30px rgba(255,255,255,.7)
+}
+
+.slider .container-slider .val {
+  width: 65px;
+  height: 35px;
+  background-color: #272262;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: consolas;
+  font-weight: 700;
+  font-size: 15px;
+  color: white;
+  letter-spacing: 1.3px;
+  transform: rotate(0deg);
+  margin-right: 10px;
+  border-radius: 40%;
+}
+
+.slider .container-slider .val::before{
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: block;
+  border: 10px solid transparent;
+  border-bottom-color: #272262;
+  left: -30px;
+  transform: rotate(-90deg);
+  margin-left: 12.5px;
+}
+
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
@@ -20,8 +92,18 @@ body {
   background-attachment: fixed;
 }
 
-h1, h2, h3, input {
+button {
+  font-family: "arial";
+}
+
+h2, h3, input {
   color: #272262;
+  font-family: "arial";
+}
+
+h1 {
+  color: #272262;
+  font-family: "Palatino", "Georgia", "serif";
 }
 
 .a_ON {
@@ -53,23 +135,20 @@ h1, h2, h3, input {
   pointer-events: none;
 }
 
-input[type=range] {
-  width: 50%;
-}
-
 .infoButton:enabled{
-  background-color: LightSkyBlue;
+  background-color: CornflowerBlue;
   border-color: #272262;
   color: #272262;
-  width: 150px;
+  width: 250px;
   padding: 7px;
   font-weight: bold;
-  font-size: 9pt;
+  font-size: 10pt;
   margin-top: 10px;
-  border-radius: 8px;
   cursor: pointer;
   outline: none;
   transition: all .4s ease-out;
+  border-radius: 20px;
+  border-width: 10px;
 }
 
 .infoButton:hover{
@@ -80,7 +159,7 @@ input[type=range] {
 .changePlayerBtn{
   background-color: orangered;
   color: white;
-  width: 30px;
+  width: 33px;
   height: 33px;
   font-size: 10pt;
   border-radius: 7px;
@@ -92,7 +171,7 @@ input[type=range] {
   background-color: orangered;
   color: white;
   width: 130px;
-  height: 28px;
+  height: 30px;
   font-size: 9pt;
   border-radius: 7px;
 }
@@ -101,27 +180,28 @@ input[type=range] {
   background-color: CornflowerBlue;
   border-color: #272262;
   color: #272262;
-  width: 130px;
   padding: 7px;
   font-weight: bold;
-  font-size: 12pt;
-  border-radius: 8px;
+  font-size: 11pt;
   cursor: pointer;
   outline: none;
   transition: all .4s ease-out;
+  border-radius: 20px;
+  border-width: 10px;
+  width: 100px;
 }
 
 .levelButton:disabled{
   background-color: CornflowerBlue;
-  border-color: #272262;
   color: #272262;
-  width: 130px;
   padding: 7px;
   font-weight: bold;
   font-size: 12pt;
-  border-radius: 8px;
   outline: none;
   transition: all .4s ease-out;
+  border-radius: 20px;
+  border-width: 10px;
+  width: 100px;
 }
 
 .levelButton:hover:enabled{
@@ -136,10 +216,11 @@ input[type=range] {
   padding: 7px;
   font-weight: bold;
   font-size: 12pt;
-  border-radius: 8px;
   cursor: pointer;
   outline: none;
   transition: all .4s ease-out;
+  border-radius: 20px;
+  border-width: 10px;
 }
 
 .okButton:disabled{
@@ -147,9 +228,10 @@ input[type=range] {
   padding: 7px;
   font-weight: bold;
   font-size: 12pt;
-  border-radius: 8px;
   outline: none;
   transition: all .4s ease-out;
+  border-radius: 20px;
+  border-width: 10px;
 }
 
 .okButton:hover:enabled{
@@ -202,15 +284,29 @@ input[type=range] {
   margin-right: 5px;
 }
 
+.infoRank {
+  color: black;
+  font-weight: bold;
+  font-size: 14pt;
+  justify-content: left;
+  background-color: #ffffff80;
+  border-radius: 7px;
+  box-shadow: 3px 3px 1px 0px #00000060;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 50px;
+}
+
 .ranking:enabled{
   background-color: RoyalBlue;
   border-color: #272262;
   color: #272262;
-  width: 50px;
+  width: 105px;
   padding: 7px;
   font-weight: bold;
   font-size: 9pt;
   margin-top: 10px;
+  margin-left: 20px;
   border-radius: 8px;
   cursor: pointer;
   outline: none;
@@ -218,6 +314,21 @@ input[type=range] {
 }
 
 .ranking:hover{
+  background-color: #272262;
+  color: #fff;
+}
+
+#closeButton{
+  background-color: LightSkyBlue;
+  border-color: black;
+  color: black;
+  float: right;
+  width: 100px;
+  border-radius: 5px;
+  border-width: 2px;
+}
+
+#closeButton:hover{
   background-color: #272262;
   color: #fff;
 }
@@ -236,21 +347,36 @@ input[type=range] {
   transition: all .4s ease-out;
 }
 
+#gameInfo {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 450px;
+}
+
 #gameRank {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  width: 100%;
+  width: 450px;
 }
 
-#gameRank td, #customers th {
+#tableRank {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 600px;
+  //margin-left: 5px;
+}
+
+#tableRank td, #customers th {
   border: 1px solid black;
   padding: 8px;
   color: Blue;
 }
 
-#gameRank tr:hover {background-color: CornflowerBlue;}
+#tableRank tr:hover {
+  background-color: CornflowerBlue;
+}
 
-#gameRank th {
+#tableRank th {
   padding-top: 12px;
   padding-bottom: 12px;
   padding-left: 12px;
