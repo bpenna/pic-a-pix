@@ -247,7 +247,7 @@ function mostraRank(ligado) {
       }
       infoText +="<br>";
     }
-    infoText +="<br><hr>";
+    //infoText +="<br><hr>";
     
     } else {
       // Troca a função do botão
@@ -301,10 +301,15 @@ function criaRank(dificuldade) {
       document.getElementById('semPlacar').innerHTML = "<h3 style='color:red;margin-left:20px;'>Ranking para o nível " + dificuldade + " ainda não disponível.</h3>";
     } else {
         
+      // Cria lista de strings para usar o código antigo
       let RANK_FILE_INFO = [];
+      
       for (var i = 0; i < data.length; i++) {
-        RANK_FILE_INFO[i] = "<" + data[i].AJUSTADO +"> <" + data[i].MINUTO + ":" + data[i].SEGUNDO + "> <" + data[i].PONTOS + "> <" + data[i].DATA + "> " + data[i].NOME + "";
-      }  
+        // Não exibe placares sem nome (apesar de salvá-los no banco de dados)
+        if (data[i].NOME != "null") {
+          RANK_FILE_INFO.push("<" + data[i].AJUSTADO +"> <" + data[i].MINUTO + ":" + data[i].SEGUNDO + "> <" + data[i].PONTOS + "> <" + data[i].DATA + "> " + data[i].NOME + "");
+        }
+      }   
     
       // Ordena ranking para apresentar na tabela (parse com string para manter o código antigo)
       let SORTED_RANK_FILE_INFO = ordenaInfo(RANK_FILE_INFO);
