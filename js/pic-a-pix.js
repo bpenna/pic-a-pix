@@ -141,6 +141,7 @@ window.onload = function() {
 //mostraRank()
 //criaRank()
 //ordenaInfo()
+//filtraInfo()
 //mostraInfo()
 
 // Criação do enigma ao clicar no botão OK
@@ -303,17 +304,21 @@ function criaRank(dificuldade) {
         
       // Cria lista de strings para usar o código antigo
       let RANK_FILE_INFO = [];
-      
       for (var i = 0; i < data.length; i++) {
+
         // Não exibe placares sem nome (apesar de salvá-los no banco de dados)
         if (data[i].NOME != "null") {
           RANK_FILE_INFO.push("<" + data[i].AJUSTADO +"> <" + data[i].MINUTO + ":" + data[i].SEGUNDO + "> <" + data[i].PONTOS + "> <" + data[i].DATA + "> " + data[i].NOME + "");
+          //console.log(RANK_FILE_INFO);
         }
-      }   
+      }  
     
       // Ordena ranking para apresentar na tabela (parse com string para manter o código antigo)
-      let SORTED_RANK_FILE_INFO = ordenaInfo(RANK_FILE_INFO);
+      let REDUNDANT_SORTED_RANK_FILE_INFO = ordenaInfo(RANK_FILE_INFO);
  
+      // Filtra tempos repetidos de um mesmo jogador para apresentar na tabela
+      let SORTED_RANK_FILE_INFO = filtraInfo(REDUNDANT_SORTED_RANK_FILE_INFO);
+      
       // Imprime informações do ranking na tabela
       var infoText = "";
       
@@ -365,6 +370,7 @@ function ordenaInfo(lista) {
   for (var i = 0; i < lista.length; i++) {
     vetor[i] = Math.floor(lista[i].substr(1,2) * 60 + lista[i].substr(4,2));
   }
+  
   if (versao_teste) {
     console.log("Vetor original:");
     console.log(vetor);
@@ -382,6 +388,8 @@ function ordenaInfo(lista) {
         vetor[j + 1] = tempVetor;
         // Ordena lista completa 
         let tempLista = lista[j];
+        //console.log(j+1);
+        //console.log(tempLista);
         lista[j] = lista[j + 1];
         lista[j + 1] = tempLista;
       }
@@ -395,6 +403,51 @@ function ordenaInfo(lista) {
     console.log(lista);
   }  
   return lista;
+}
+
+// Filtra informações de tempos e pontos dos jogadores
+function filtraInfo(lista) {
+  
+  // Cria vetor com tempos corrigidos e pontos para realizar o filtro
+  let vetor = []; 
+  for (var i = 0; i < lista.length; i++) {
+    vetor[i] = Math.floor(lista[i].substr(1,2) * 60 + lista[i].substr(4,2)) + "/" + lista[i].substr(17,3) + "/" + lista[i].substr(35,lista[i].length - 35);
+  }
+  
+  if (versao_teste) {
+    console.log("Vetor original:");
+    console.log(vetor);
+    console.log("Lista original:");
+    console.log(lista);
+  }
+    
+  // Obtendo os índices das linhas repetidas (nome, tempo e pontos)
+  let vetorUnico = [];
+  let indicesUnicos = [];
+  
+  vetor.forEach((elemem, i) =>{
+    if(!vetorUnico.includes(elemem)){
+      vetorUnico.push(elemem);
+      indicesUnicos.push(i);
+    }
+  });
+  
+  // Filtrando as linhas da lista que são únicas
+  let novaLista = [];
+  for (var i = 0; i < lista.length; i++) {
+    if (indicesUnicos.includes(i)) {
+      novaLista.push(lista[i]);
+    }
+  }
+  
+  if (versao_teste) {
+    console.log("Índices únicos:");
+    console.log(indicesUnicos);
+    console.log("Lista filtrada:");
+    console.log(novaLista);
+  }  
+ 
+  return novaLista;
 }
 
 // Mostrando as regras do jogo
