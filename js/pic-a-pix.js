@@ -248,7 +248,6 @@ function mostraRank(ligado) {
       }
       infoText +="<br>";
     }
-    //infoText +="<br><hr>";
     
     } else {
       // Troca a função do botão
@@ -333,8 +332,8 @@ function criaRank(dificuldade) {
       infoText += "<tr><th>Nº</th><th>Nome</th><th>Tempo ajustado</th><th>Data</th><th>Tempo</th><th>Pontos</th></tr>";
           
       var maxRanking = numRanking;
-      if (RANK_FILE_INFO.length < numRanking) {
-        maxRanking = RANK_FILE_INFO.length;
+      if (SORTED_RANK_FILE_INFO.length < numRanking) {
+        maxRanking = SORTED_RANK_FILE_INFO.length;
       }
           
       for (var i = 0; i < maxRanking; i++) {
@@ -388,8 +387,6 @@ function ordenaInfo(lista) {
         vetor[j + 1] = tempVetor;
         // Ordena lista completa 
         let tempLista = lista[j];
-        //console.log(j+1);
-        //console.log(tempLista);
         lista[j] = lista[j + 1];
         lista[j + 1] = tempLista;
       }
@@ -440,12 +437,12 @@ function filtraInfo(lista) {
     }
   }
   
-  if (versao_teste) {
+ if (versao_teste) {
     console.log("Índices únicos:");
     console.log(indicesUnicos);
     console.log("Lista filtrada:");
     console.log(novaLista);
-  }  
+ }  
  
   return novaLista;
 }
@@ -581,7 +578,6 @@ function confereParcial(matriz, infoCont){
 
 // Gerenciamento das atualizações de dados
 // Tipos possíveis: ranking, players, start, happyEnd, sadEnd
-
 function atualizaInfo(tipo) {
     
   // Informações do banco de dados (supabase)
